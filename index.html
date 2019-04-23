@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+ <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script type="text/javascript">
+//Load the countries and years list from the google drive sheet
+GetCountries();
+GetYears();
+
+//This function is called when the <select> elements are changed
+function getChart(sel)
+{
+	var a=document.getElementById("countryA").value;
+	var b=document.getElementById("countryB").value;
+	var year=document.getElementById("year").value;
+	if(a!='select' & b !='select' & year!='select'){
+		myChart(a,b,year);
+		document.getElementById("text").innerHTML = "";
+	} 
+}
+//Gets the countries from the google sheet and adds them to the <select> elements
+function GetCountries(){
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+	function drawChart() {
+	  var queryString = encodeURIComponent('SELECT A'); 
+
+      var query = new google.visualization.Query(
+          'https://docs.google.com/spreadsheets/d/1DFMhUw9517OvbmT-h0R8ggwXgZp9Jjot2FJt5UpLFUY/gviz/tq?sheet=Sheet1&headers=1&tq=' + queryString);
+     
+  query.send(handleQueryResponse);
+	}
+	function handleQueryResponse(response) {
+		var data = response.getDataTable();
+		var countrieList=data.getDistinctValues(0);
+		for(x=0; x<countrieList.length;x++){
+			$('#countryA').append($('<option>', {
+			value: countrieList[x],
+			text: countrieList[x]
+			}));
+			$('#countryB').append($('<option>', {
+			value: countrieList[x],
+			text: countrieList[x]
+			}));
+		}
+	}
+}
+//Function the gets years from the sheet and updates the <Select>
+function GetYears(){
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+	function drawChart() {
+		var queryString = encodeURIComponent('SELECT B'); 
+		var query = new google.visualization.Query(
+          'https://docs.google.com/spreadsheets/d/1DFMhUw9517OvbmT-h0R8ggwXgZp9Jjot2FJt5UpLFUY/gviz/tq?sheet=Sheet1&headers=1&tq=' + queryString);
+		query.send(handleQueryResponse);
+	}
+	function handleQueryResponse(response) {
+		var data = response.getDataTable();
+		var yearList=data.getDistinctValues(0);  
+		for(x=0; x<yearList.length;x++){
+
+		$('#year').append($('<option>', {
+			value: yearList[x],
+			text: yearList[x]
+		}));
+		}
+	}
+}
+ //Loads the chart given that the countries and year have been selected called from getChart
+function myChart(countryA, countryB,year){
+	google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawSheetName);
+	function drawSheetName() {
+		var queryString = encodeURIComponent('select C, D,A  WHERE (A="'+countryA+'" OR A="'+countryB+'") AND (B='+year+') ORDER by C'); 
+		var query = new google.visualization.Query(
+          'https://docs.google.com/spreadsheets/d/1DFMhUw9517OvbmT-h0R8ggwXgZp9Jjot2FJt5UpLFUY/gviz/tq?sheet=Sheet1&headers=1&tq=' + queryString);
+		query.send(handleSampleDataQueryResponse);
+    }
+    function handleSampleDataQueryResponse(response) {
+		if (response.isError()) {
+			alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+        return;
+		}
+
+      var data = response.getDataTable();
+	  data.addColumn({type: 'string', role: 'style'});
+		for(x=0; x< response.getDataTable().getNumberOfRows(); x++){
+			var currentCountry=data.getValue(x, 2);
+			if(countryA==currentCountry){
+				data.setCell(x, 3, 'color: #FF0000');
+			}
+			if(countryB==currentCountry){
+				data.setCell(x, 3, 'color: #0000FF');
+			}
+			data.setCell(x, 0, (currentCountry+" "+data.getValue(x, 0)).replace('years','' ));
+		}
+ 
+   var options = {
+        title: countryA+ ' and '+ countryB +' Suicides in the year '+year,
+        width: '100%',
+        height: '500',
+        bar: {groupWidth: "95%"},
+        legend: { position: "none" }}
+		 data.removeColumn(2);
+	
+	var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
+      chart.draw(data, options);
+	  }
+	}
+ </script>
+<style>
+
+body, html {
+  height: 100%;
+  margin: 0;
+  font: 400 15px/1.8 "Lato", sans-serif;
+  color: #777;
+}
+
+.bgimg-1, .bgimg-2, .bgimg-3 {
+  position: relative;
+  opacity: 0.65;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+.bgimg-1 {
+  background-color: #330019;
+  min-height: 100%;
+}
+
+.bgimg-2 {
+  background-color: #CCFFCC;
+  min-height: 400px;
+}
+
+.bgimg-3 {
+ 
+  min-height: 400px;
+}
+
+.caption {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  color: #000;
+}
+
+.caption span.border {
+  background-color: #111;
+  color: #fff;
+  padding: 18px;
+  font-size: 25px;
+  letter-spacing: 10px;
+}
+h2{ color:black;}
+h3 {
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  font: 20px "Lato", sans-serif;
+  color: #111;
+}
+
+/* Turn off parallax scrolling for tablets and phones */
+@media only screen and (max-device-width: 1024px) {
+  .bgimg-1, .bgimg-2, .bgimg-3 {
+    background-attachment: scroll;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="bgimg-1">
+  <div class="caption">
+  <span class="border">Who is the most at risk for Suicide?</span>
+  </div>
+</div>
+
+<div style="color: white;background-color:grey;text-align:center;padding:50px 80px;text-align: justify;">
+<div class="container">
+<div class="row">
+<div class="col-sm-6">
+<img src="images/years.jpg" alt="suicide over the years" width="95%"/>
+<p style="color: yellow;">This needs to be swapped with interactive line graph for the final.</p>
+</div>
+<div class="col-sm-6">
+  <h3 style="text-align:center; color:white;">Can we use suicide data to help find at risk people and prevent suicides from occuring in the world?</h3>
+  <p> Every advertisement you see isn't by acident.  Marketing firms across the world spend tons of money looking at data on how to find there target market and get there ads seen.  Suicide is a huge problem in the world and occurs in every country in the world. In the United states it is the 10th leading cause of death. Can we use suicide data to find out who to target our advertisements? Who is the target demographic? </p>
+  </div>
+  </div>
+</div>
+</div>
+
+<!---  Map-->
+<div class="bgimg-2">
+  <div class="container" style="padding-top: 50px;" >
+  <div class="row">
+	<div class="col-sm-6">
+	<h2>What Countries have the biggest problem?</h2>
+	<p>When plotting all the suicides on a map. We can see that Russia and the United States have the greatest number of suicides in the world. </p>
+	</div>
+	<div class="col-sm-6">
+		<img src="images/map.jpg" alt="suicide map" width="95%"/>
+	</div>
+  </div>
+  
+  </div>
+</div>
+<div class="bgimg-3">
+<div class="container">
+ <h2>Suicide comparison by country</h2>
+ <p style="color: yellow;">This needs to be updated to be a selector where you can select as many countries as you want</p>
+
+  	<form class="form-inline">
+		<div class="form-group">
+			<label for="countryA">Country A</label><select class="form-control" id="countryA" onchange="getChart(this);"><option value="select">Select</option></select>
+		</div>
+		<div class="form-group">
+			<label for="countryA">Country B</label><select class="form-control" id="countryB"><option value="select">Select</option></select>
+		</div>
+		<div class="form-group">
+			<label for="year">Year</label><select class="form-control" id="year" onchange="getChart(this);"><option value="select">Select</option></select>
+		</div>
+	</form>
+  <div id="barchart_values"></div>
+</div>
+</div>
+<div style="position:relative;">
+  <div style="color:#ddd;background-color:#282E34;text-align:center;padding:50px 80px;text-align: justify;">
+ <div class="container">
+	<div class="row">
+		<div class="col-sm-6">
+			<img src="images/age.jpg" alt="suicide age groups" width="95%"/>
+		</div>
+		
+		<div class="col-sm-6">
+		<h2 style="color:white;">What age group is the most at risk?</h2>
+		<p>From the age graph we can see that a majority of suicides occur between the ages of 35-74.  Targeting this demographic would allow us to reach out to the most people for our advertisement. A kids advertisement would have the least impact. </p>
+		</div>
+	</div>
+ </div>
+  </div>
+</div>
+
+<div class="bgimg-3">
+<div class="container">
+ <div class="row">
+ <div class="col-sm-6">
+ <h2>Does wealth factor into who we should target?</h2>
+ <p>From the visualization we can see that with the exception of the United States, wealth doesn't seem to be relevant to our marketing</p>
+ </div>
+ <div class="col-sm-6">
+ 	<img src="images/gdp.jpg" alt="suicide by country gdp" width="95%"/>
+ </div>
+ 
+ </div>
+</div>
+</div>
+
+<div style="position:relative;">
+  <div style="color:#ddd;background-color:#282E34;text-align:center;padding:50px 80px;text-align: justify;">
+  <h2 style="color:white;">What did we learn?</h2>
+  <p>As we can saw from the charts, males aged 35-74 in the United States and Russia are at most risk.</p>
+  </div>
+</div>
+
+
+
+</body>
+</html>
