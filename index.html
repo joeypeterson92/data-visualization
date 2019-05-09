@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Suicide</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -8,7 +9,112 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
   
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600,200italic,600italic&subset=latin,vietnamese' rel='stylesheet' type='text/css'>
+
+  <script src="http://phuonghuynh.github.io/js/bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="http://phuonghuynh.github.io/js/bower_components/d3/d3.min.js"></script>
+  <script src="http://phuonghuynh.github.io/js/bower_components/d3-transform/src/d3-transform.js"></script>
+  <script src="http://phuonghuynh.github.io/js/bower_components/cafej/src/extarray.js"></script>
+  <script src="http://phuonghuynh.github.io/js/bower_components/cafej/src/misc.js"></script>
+  <script src="http://phuonghuynh.github.io/js/bower_components/cafej/src/micro-observer.js"></script>
+  <script src="http://phuonghuynh.github.io/js/bower_components/microplugin/src/microplugin.js"></script>
+  <script src="http://phuonghuynh.github.io/js/bower_components/bubble-chart/src/bubble-chart.js"></script>
+  <script src="http://phuonghuynh.github.io/js/bower_components/bubble-chart/src/plugins/central-click/central-click.js"></script>
+  <script src="http://phuonghuynh.github.io/js/bower_components/bubble-chart/src/plugins/lines/lines.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+  $(document).ready(function () {
+  var bubbleChart = new d3.svg.BubbleChart({
+    supportResponsive: true,
+    //container: => use @default
+    size: 600,
+    //viewBoxSize: => use @default
+    innerRadius: 600 / 3.5,
+    //outerRadius: => use @default
+    radiusMin: 50,
+    //radiusMax: use @default
+    //intersectDelta: use @default
+    //intersectInc: use @default
+    //circleColor: use @default
+    data: {
+      items: [
+	  {text: "Germany", count: "291262"},{text: "Ukraine", count: "319950"},{text: "France", count: "329127"},{text: "Japan", count: "806902"},{text: "United States", count: "1034013"},{text: "Russian Federation", count: "1209742"},{text: "United Kingdom", count: "136805"},{text: "Poland", count: "139098"},{text: "Brazil", count: "226613"},{text: "Republic of Korea", count: "261730"},
+      ],
+      eval: function (item) {return item.count;},
+      classed: function (item) {return item.text.split(" ").join("");}
+    },
+    plugins: [
+      {
+        name: "central-click",
+        options: {
+          text: "",
+          style: {
+            "font-size": "12px",
+            "font-style": "italic",
+            "font-family": "Source Sans Pro, sans-serif",
+            //"font-weight": "700",
+            "text-anchor": "middle",
+            "fill": "white"
+          },
+          attr: {dy: "65px"},
+          centralClick: function() {
+            //alert("Here is more details!!");
+          }
+        }
+      },
+      {
+        name: "lines",
+        options: {
+          format: [
+            {// Line #0
+              textField: "count",
+              classed: {count: true},
+              style: {
+                "font-size": "28px",
+                "font-family": "Source Sans Pro, sans-serif",
+                "text-anchor": "middle",
+                fill: "white"
+              },
+              attr: {
+                dy: "0px",
+                x: function (d) {return d.cx;},
+                y: function (d) {return d.cy;}
+              }
+            },
+            {// Line #1
+              textField: "text",
+              classed: {text: true},
+              style: {
+                "font-size": "14px",
+                "font-family": "Source Sans Pro, sans-serif",
+                "text-anchor": "middle",
+                fill: "white"
+              },
+              attr: {
+                dy: "20px",
+                x: function (d) {return d.cx;},
+                y: function (d) {return d.cy;}
+              }
+            }
+          ],
+          centralFormat: [
+            {// Line #0
+              style: {"font-size": "50px"},
+              attr: {}
+            },
+            {// Line #1
+              style: {"font-size": "30px"},
+              attr: {dy: "40px"}
+            }
+          ]
+        }
+      }]
+  });
+});
+  
+  </script>
 <script type="text/javascript">
+
 //Load the countries and years list from the google drive sheet
 GetCountries();
 GetYears();
@@ -142,7 +248,9 @@ body, html {
   background-color: #CCFFCC;
   min-height: 400px;
 }
-
+.row{ 
+	height: 100vh;
+}
 .bgimg-3 {
  
   min-height: 400px;
@@ -178,22 +286,47 @@ h3 {
     background-attachment: scroll;
   }
 }
+  body {
+    margin-bottom: 200%;
+  }
+  .floating-menu {
+    font-family: sans-serif;
+    background: yellowgreen;
+    padding: 5px;;
+    width: 130px;
+    z-index: 100;
+    position: fixed;
+  }
+  .floating-menu a, 
+  .floating-menu h3 {
+    font-size: 0.9em;
+    display: block;
+    margin: 0 0.5em;
+    color: white;
 </style>
 </head>
 <body>
-
-<div class="bgimg-1">
+ <nav class="floating-menu">
+    
+    <a href="#top">Top</a>
+    <a href="#intro">Intro</a>
+    <a href="#map">Countries</a>
+    <a href="#compare">Compare</a>
+	<a href="#age">Age</a>
+	<a href="#wealth">Wealth</a>
+	<a href="#conclusion">Conclusion</a>
+  </nav>
+<div class="bgimg-1" id="top">
   <div class="caption">
   <span class="border">Who is the most at risk for Suicide?</span>
   </div>
 </div>
 
-<div style="color: white;background-color:grey;text-align:center;padding:50px 80px;text-align: justify;">
+<div style="color: white;background-color:grey;text-align:center;padding:50px 80px;text-align: justify;" id="intro">
 <div class="container">
 <div class="row">
 <div class="col-sm-6">
-<img src="images/years.jpg" alt="suicide over the years" width="95%"/>
-<p style="color: yellow;">This needs to be swapped with interactive line graph for the final.</p>
+<div class="bubbleChart"></div>
 </div>
 <div class="col-sm-6">
   <h3 style="text-align:center; color:white;">Can we use suicide data to help find at risk people and prevent suicides from occuring in the world?</h3>
@@ -204,24 +337,24 @@ h3 {
 </div>
 
 <!---  Map-->
-<div class="bgimg-2">
+<div class="bgimg-2" id="map">
   <div class="container" style="padding-top: 50px;" >
   <div class="row">
-	<div class="col-sm-6">
+	<div class="col-sm-3">
 	<h2>What Countries have the biggest problem?</h2>
 	<p>When plotting all the suicides on a map. We can see that Russia and the United States have the greatest number of suicides in the world. </p>
 	</div>
-	<div class="col-sm-6">
-		<img src="images/map.jpg" alt="suicide map" width="95%"/>
+	<div class="col-sm-9">
+		<div class='tableauPlaceholder' id='viz1557096131664' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;43&#47;434YH4WXW&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='path' value='shared&#47;434YH4WXW' /> <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;43&#47;434YH4WXW&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1557096131664');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
 	</div>
   </div>
   
   </div>
 </div>
-<div class="bgimg-3">
+<div class="bgimg-3" id="compare">
 <div class="container">
  <h2>Suicide comparison by country</h2>
- <p style="color: yellow;">This needs to be updated to be a selector where you can select as many countries as you want</p>
+ 
 
   	<form class="form-inline">
 		<div class="form-group">
@@ -237,12 +370,12 @@ h3 {
   <div id="barchart_values"></div>
 </div>
 </div>
-<div style="position:relative;">
+<div style="position:relative;" id="age">
   <div style="color:#ddd;background-color:#282E34;text-align:center;padding:50px 80px;text-align: justify;">
  <div class="container">
 	<div class="row">
 		<div class="col-sm-6">
-			<img src="images/age.jpg" alt="suicide age groups" width="95%"/>
+			<div class='tableauPlaceholder' id='viz1557096718590' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;By&#47;ByAge_15570967033070&#47;Sheet1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='ByAge_15570967033070&#47;Sheet1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;By&#47;ByAge_15570967033070&#47;Sheet1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1557096718590');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
 		</div>
 		
 		<div class="col-sm-6">
@@ -254,7 +387,7 @@ h3 {
   </div>
 </div>
 
-<div class="bgimg-3">
+<div class="bgimg-3" id="wealth">
 <div class="container">
  <div class="row">
  <div class="col-sm-6">
@@ -262,17 +395,18 @@ h3 {
  <p>From the visualization we can see that with the exception of the United States, wealth doesn't seem to be relevant to our marketing</p>
  </div>
  <div class="col-sm-6">
- 	<img src="images/gdp.jpg" alt="suicide by country gdp" width="95%"/>
+ 	<div class='tableauPlaceholder' id='viz1557374725804' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Mo&#47;MoneyVsSuicideCount&#47;Sheet2&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='MoneyVsSuicideCount&#47;Sheet2' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Mo&#47;MoneyVsSuicideCount&#47;Sheet2&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1557374725804');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
  </div>
  
  </div>
 </div>
 </div>
 
-<div style="position:relative;">
+<div style="position:relative;" id="conclusion">
   <div style="color:#ddd;background-color:#282E34;text-align:center;padding:50px 80px;text-align: justify;">
   <h2 style="color:white;">What did we learn?</h2>
-  <p>As we can saw from the charts, males aged 35-74 in the United States and Russia are at most risk.</p>
+  <p>As we can saw from the charts, males aged 35-74 in the United States and Russia are at most risk. </p>
+  <p> Using charts and graphs we can easily see all the data at one time. The orginal spreadsheet was over 100,000 rows, and would take a small book to be able to print. If you had to add rows and manipulate the data you would never be able to see all the data at one time. </p>
   </div>
 </div>
 
